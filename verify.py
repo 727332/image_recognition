@@ -1,9 +1,14 @@
 """Verify splits, saved predictions, weights and reported metrics."""
 from pathlib import Path
-import json,gzip
+import json,gzip,argparse
 import numpy as np
 from train import predict,shift
-p=Path(__file__).parent;r=p/'results'
+parser=argparse.ArgumentParser(description='Verify saved experiment results')
+parser.add_argument('--results',default='results',help='Result directory relative to project, or absolute path')
+args=parser.parse_args()
+p=Path(__file__).resolve().parent
+r=Path(args.results)
+if not r.is_absolute(): r=p/r
 data=np.loadtxt(gzip.open(p/'digits.csv.gz','rt'),delimiter=',');x=data[:,:64]/16;y=data[:,64].astype(int)
 meta=json.loads((r/'metrics.json').read_text())
 for row in meta['results']:
